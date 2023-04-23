@@ -42,6 +42,8 @@ dependencies:
   syncfusion_flutter_sliders: ^21.1.41
   intl: ^0.18.1
   dropdown_button2: ^2.1.0
+  provider: ^6.0.5
+  shared_preferences: ^2.1.0
 
 dev_dependencies:
   flutter_test:

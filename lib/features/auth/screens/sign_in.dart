@@ -1,19 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/FadeAnimation.dart';
-import 'package:money_manager/User_sign_in.dart';
+import 'package:money_manager/features/auth/screens/sign_up.dart';
+import 'package:money_manager/features/auth/services/auth_services.dart';
 
-class Sign_Up extends StatefulWidget {
-  const Sign_Up({super.key});
 
-  @override
-  State<Sign_Up> createState() => _Sign_UpState();
+enum Auth {
+  signin,
+  signup,
 }
 
-class _Sign_UpState extends State<Sign_Up> {
+class Togglers {
+  static bool obscurePassword = true;
+  static bool keepSignedIn = true;
+}
+
+class SignInScreen extends StatefulWidget {
+  static const String routeName = '/signup-screen';
+  const SignInScreen({super.key});
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  Auth _auth = Auth.signin;
+  final _signInFormKey = GlobalKey<FormState>();
+  final AuthService authService = AuthService();
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose(){
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  void signInUser() {
+    debugPrint("checkpoint 0");
+    authService.signInUser(
+      context: context,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final email = TextEditingController();
-    final pass = TextEditingController();
     return Scaffold(
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
@@ -117,7 +151,7 @@ class _Sign_UpState extends State<Sign_Up> {
                                           bottom:
                                               BorderSide(color: Colors.grey))),
                                   child: TextField(
-                                    controller: email,
+                                    controller: _emailController,
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: "Email",
@@ -129,7 +163,7 @@ class _Sign_UpState extends State<Sign_Up> {
                                   padding: EdgeInsets.all(8.0),
                                   child: TextField(
                                     obscureText: true,
-                                    controller: pass,
+                                    controller: _passwordController,
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: "Password",
@@ -146,7 +180,9 @@ class _Sign_UpState extends State<Sign_Up> {
                       FadeAnimation(
                         2,
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            signInUser();
+                          },
                           child: Container(
                             height: 50,
                             decoration: BoxDecoration(

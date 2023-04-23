@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:money_manager/FadeAnimation.dart';
-import 'package:money_manager/Login_Screen.dart';
+import 'package:money_manager/features/auth/screens/sign_in.dart';
+import 'package:money_manager/features/userClass.dart';
+
+import '../../../constants/app_color.dart';
+import '../services/auth_services.dart';
 
 class UserSignIn extends StatefulWidget {
   UserSignIn({super.key});
@@ -17,7 +21,22 @@ class _UserSignInState extends State<UserSignIn> {
   final pass = TextEditingController();
   final usernametextconroller = TextEditingController();
   final budget = TextEditingController();
-  final age = TextEditingController();
+  final otp = TextEditingController();
+  final AuthService authService = AuthService();
+
+
+  // void signUpUser() async {
+  //   debugPrint("checkpoint  7 0");
+  //   await authService.signUpUser(email: email.text, password: pass.text, name: usernametextconroller.text,);
+  //   debugPrint("okay");
+  // }
+
+  getOtp() async {
+    await authService.verifyEmail(
+      context: context,
+      email: email.text,
+    );
+  }
 
   Widget build(BuildContext context) {
     double scheight = MediaQuery.of(context).size.height;
@@ -184,7 +203,7 @@ class _UserSignInState extends State<UserSignIn> {
                                             Color.fromRGBO(158, 158, 158, 1)))),
                             child: TextFormField(
                               controller: usernametextconroller,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.name,
                               decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintText: "Name",
@@ -262,7 +281,11 @@ class _UserSignInState extends State<UserSignIn> {
                                     ])),
                                 child: Center(
                                   child: GestureDetector(
-                                    onTap: () async {},
+                                    onTap: () async {
+                                      debugPrint("sdfghjkl");
+                                      await getOtp();
+                                      _displayTextInputDialog(context);
+                                    },
                                     child: Text(
                                       "Sign Up",
                                       style: TextStyle(
@@ -292,7 +315,7 @@ class _UserSignInState extends State<UserSignIn> {
                                   onTap: () {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
-                                            builder: (context) => Sign_Up()));
+                                            builder: (context) => SignInScreen()));
                                   },
                                   child: Text(
                                     "Existing User?",
@@ -312,4 +335,51 @@ class _UserSignInState extends State<UserSignIn> {
           )
         ]))));
   }
+  Future<void> _displayTextInputDialog(BuildContext context){
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Verify your E-mail'),
+            content: TextField(
+              controller: otp,
+              decoration: InputDecoration(hintText: "OTP"),
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStatePropertyAll(AppColors.background)),
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                    MaterialStatePropertyAll(AppColors.background)),
+                child: Text('OK'),
+                onPressed: () {
+                  print(otp.text);
+
+                  debugPrint(UserClass.otp);
+                  debugPrint(otp.text);
+                  debugPrint("1234567");
+                  if (UserClass.otp == otp.text) {
+                    Navigator.pop(context);
+                    authService.signUpUser(email: email.text, password: pass.text, name: usernametextconroller.text,);
+                    Navigator.push(context, MaterialPageRoute(builder:(context)=> SignInScreen()));
+                    debugPrint("dgdg");
+                  }
+                  else{
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ],
+          );
+          },
+        );
+    }
 }
